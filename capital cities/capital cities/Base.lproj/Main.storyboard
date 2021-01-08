@@ -731,6 +731,9 @@
                                 <constraints>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="215" id="SPx-E3-BTw"/>
                                 </constraints>
+                                <connections>
+                                    <outlet property="delegate" destination="XfG-lQ-9wD" id="L8k-P5-pxE"/>
+                                </connections>
                             </mapView>
                         </subviews>
                         <constraints>
@@ -747,6 +750,11 @@
                             <constraint firstAttribute="trailing" secondItem="2hx-MX-Kyh" secondAttribute="trailing" constant="20" symbolic="YES" id="xJ9-6H-H4Q"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="mapView" destination="60t-dP-dce" id="BS6-kR-QDH"/>
+                        <outlet property="questionLabel" destination="tvI-FD-lpI" id="XdB-tv-rkT"/>
+                        <outlet property="scoreLabel" destination="2hx-MX-Kyh" id="9VQ-jo-fpG"/>
+                    </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
