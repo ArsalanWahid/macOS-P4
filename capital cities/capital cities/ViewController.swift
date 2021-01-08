@@ -17,7 +17,8 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        let recognizer = NSClickGestureRecognizer(target: self, action: #selector(mapClicked))
+        mapView.addGestureRecognizer(recognizer)
     }
 
     override var representedObject: Any? {
@@ -25,7 +26,16 @@ class ViewController: NSViewController {
         // Update the view, if already loaded.
         }
     }
-
-
+    
+    func addPin(at coordinate: CLLocationCoordinate2D) {
+        let guess = Pin(title: "Your Guess", coordinate: coordinate, color: .red)
+        mapView.addAnnotation(guess)
+    }
+    
+    @objc func mapClicked(_ sender: NSClickGestureRecognizer) {
+        let location = sender.location(in: mapView)
+        let coordinates = mapView.convert(location, toCoordinateFrom: mapView)
+        addPin(at: coordinates)
+    }
 }
 
