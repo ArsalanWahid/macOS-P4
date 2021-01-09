@@ -28,6 +28,7 @@ class ViewController: NSViewController, MKMapViewDelegate {
         super.viewDidLoad()
 
         let recognizer = NSClickGestureRecognizer(target: self, action: #selector(mapClicked))
+        mapView.mapType = .satellite
         mapView.addGestureRecognizer(recognizer)
         startNewGame()
     }
@@ -39,14 +40,35 @@ class ViewController: NSViewController, MKMapViewDelegate {
     }
     
     func addPin(at coordinate: CLLocationCoordinate2D) {
+        // check if city exists
+        guard let actual = currenCity else { return }
+        
         let guess = Pin(title: "Your Guess", coordinate: coordinate, color: .red)
+        //Add the guess pin on the map
         mapView.addAnnotation(guess)
+        //add the actual pin on the map
+        mapView.addAnnotation(actual)
+        
+        //convert pins location to map points for calculation
+        let point1 = MKMapPoint(guess.coordinate)
+        let point2 = MKMapPoint(actual.coordinate)
+        
+        //Calculate how far the distance of points were means 10km diff
+        let distance = Int(max(0, 500 - point1.distance(to: point2) / 1000))
+        
+        //Add the score that will trigger the property observer
+        score += distance
+        
+        actual.subtitle = "You scored: \(distance)"
+        mapView.selectAnnotation(actual, animated: true)
     }
     
-    @objc func mapClicked(_ sender: NSClickGestureRecognizer) {
-        let location = sender.location(in: mapView)
-        let coordinates = mapView.convert(location, toCoordinateFrom: mapView)
-        addPin(at: coordinates)
+    @objc func mapClicked(_ recognizer: NSClickGestureRecognizer) {
+        if mapView.annotations.count == 0 {
+            addPin(at: mapView.convert(recognizer.location(in: mapView), toCoordinateFrom: mapView))
+        }else {
+            nextCity()
+        }
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -82,7 +104,7 @@ class ViewController: NSViewController, MKMapViewDelegate {
         cities.append(Pin(title: "Tokyo", coordinate: CLLocationCoordinate2D(latitude: 35.652832, longitude: 139.839478)))
         cities.append(Pin(title: "Beijing", coordinate: CLLocationCoordinate2D(latitude: 39.916668, longitude: 116.383331)))
         cities.append(Pin(title: "Bangkok", coordinate: CLLocationCoordinate2D(latitude: 13.736717, longitude: 100.523186)))
-        cities.append(Pin(title: "London", coordinate: CLLocationCoordinate2D(latitude:  41.015137, longitude: 28.979530)))
+        cities.append(Pin(title: "Istanbul", coordinate: CLLocationCoordinate2D(latitude:  41.015137, longitude: 28.979530)))
         nextCity()
     }
     
@@ -100,3 +122,14 @@ class ViewController: NSViewController, MKMapViewDelegate {
     }
 }
 
+
+// add string functionality to convert numbers to string represrntation
+extension String.StringInterpolation {
+    mutating func appendInterpolation(format  value: Int){
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .spellOut
+        if let result = formatter.string(from: value as NSNumber){
+            appendLiteral(result)
+        }
+    }
+}
